@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"c:/Users/Katiechi/Documents/M-CERN/public/images\" && ls \"c:/Users/Katiechi/Documents/M-CERN/public\")",
+      "Bash(bun run *)",
+      "PowerShell(bun run build 2>&1)",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npm install --no-audit --no-fund 2>&1)",
+      "PowerShell(npm install @rollup/rollup-win32-x64-msvc --no-save --no-audit --no-fund 2>&1)",
+      "PowerShell(npm install --no-save --no-audit --no-fund @rollup/rollup-win32-x64-msvc lightningcss-win32-x64-msvc @tailwindcss/oxide-win32-x64-msvc 2>&1)",
+      "Bash(npm run *)",
+      "Bash(curl -sf http://localhost:8080/ -o /dev/null)",
+      "Bash(curl -sf -o /dev/null -w \"HOME %{http_code}\\\\n\" http://localhost:8080/)",
+      "Bash(curl -sf -o /dev/null -w \"ABOUT %{http_code}\\\\n\" http://localhost:8080/about)",
+      "Bash(curl -sf -o /dev/null -w \"SERVICES %{http_code}\\\\n\" http://localhost:8080/services)",
+      "Bash(curl -sf -o /dev/null -w \"GALLERY %{http_code}\\\\n\" http://localhost:8080/gallery)",
+      "Bash(curl -sf -o /dev/null -w \"CONTACT %{http_code}\\\\n\" http://localhost:8080/contact)",
+      "Bash(curl -sf -o /dev/null -w \"LOGO %{http_code}\\\\n\" http://localhost:8080/images/mcern-logo.png)",
+      "Bash(grep -iE '\\\\.\\(jpg|jpeg|png\\)$')",
+      "Bash(grep -v '\\\\.jpg\\\\.adding$')",
+      "Read(//tmp/**)",
+      "Bash(cat)",
+      "Bash(sort /tmp/used.txt)",
+      "Bash(comm -23 /tmp/all_photos.txt /tmp/used_sorted.txt)",
+      "Bash(npm install *)",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Katiechi\\Documents\\M-CERN\\public"
+    ]
+  }
+}
