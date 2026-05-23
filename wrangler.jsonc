@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "m-cern",
+  "compatibility_date": "2026-05-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker/index.ts",
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS",
+    // Serve index.html for unknown client-side routes (/about, /services, …)
+    // so hard refreshes and deep links work. Replaces the _redirects SPA rule,
+    // which the Workers asset deployer rejects as an infinite loop.
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

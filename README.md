@@ -27,9 +27,10 @@ functions/api/contact.ts   Cloudflare Pages Function for the contact form
 public/                     Static assets copied as-is into the build
   images/                   Optimized site photos (webp)
   images/extras/            Gallery "Field Photos"
-  _redirects               SPA fallback for Cloudflare Pages / Netlify
   .htaccess                SPA fallback + headers for Apache / cPanel
   contact.php              Contact handler for cPanel/PHP hosting (optional)
+worker/index.ts            Cloudflare Worker: serves the SPA + POST /api/contact
+wrangler.jsonc             Cloudflare Worker config (assets + SPA fallback)
 src/
   routes/                  Pages (index, about, services, gallery, contact)
   components/              Header, Footer, shared UI
@@ -39,24 +40,29 @@ src/
 Most copy, contact details, pillars, gallery items, and the areas-of-operation
 data are centralized in [`src/data/site.ts`](src/data/site.ts).
 
-## Deployment — Cloudflare Pages (recommended)
+## Deployment — Cloudflare Workers (recommended)
 
-Connect this repo in the Cloudflare dashboard (**Workers & Pages → Create → Pages → Connect to Git**):
+This repo deploys as a **Worker with static assets**. Connect it in the
+Cloudflare dashboard (**Workers & Pages → Create → Import a repository**) and set,
+under the project's **Settings → Build**:
 
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Build output directory | `dist` |
-| Framework preset | None / Vite |
+| Deploy command | `npx wrangler deploy` |
 | Node version | 20 (set via `.nvmrc`) |
 
-Client-side routes work on hard refresh via `public/_redirects`.
+`wrangler.jsonc` serves `dist/` and uses `not_found_handling: single-page-application`
+so deep links / hard refreshes resolve to the SPA. The Worker in
+[`worker/index.ts`](worker/index.ts) handles `POST /api/contact`; all other
+requests are served as static assets.
+
+To deploy from your machine instead: `npm run deploy` (runs `vite build` then `wrangler deploy`).
 
 ### Contact form (Cloudflare)
 
-The form posts to `/api/contact`, handled by `functions/api/contact.ts`, which
-sends email through [Resend](https://resend.com). In the Pages project under
-**Settings → Environment variables**, add:
+The form posts to `/api/contact`, handled by the Worker, which sends email via
+[Resend](https://resend.com). In the Worker's **Settings → Variables and Secrets**, add:
 
 | Variable | Value | Notes |
 | --- | --- | --- |
@@ -69,7 +75,7 @@ gracefully falls back to opening the visitor's email client (`mailto:`).
 
 ## Deployment — other hosts
 
-- **Netlify** — `netlify.toml` + `public/_redirects` are already configured.
+- **Netlify** — `netlify.toml` is configured (build `npm run build`, publish `dist`, SPA redirect).
 - **cPanel / Apache** — upload the contents of `dist/` to `public_html`.
   `public/.htaccess` handles HTTPS, SPA routing, caching, and the `/contact.php`
   passthrough. (On non-Cloudflare hosts the form falls back to `mailto:` unless
