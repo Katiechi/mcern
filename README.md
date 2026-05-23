@@ -73,10 +73,27 @@ The form posts to `/api/contact`, handled by the Worker, which sends email via
 Until `RESEND_API_KEY` is set (and during local `vite` runs), the form
 gracefully falls back to opening the visitor's email client (`mailto:`).
 
-## Deployment — other hosts
+## Deployment — Netlify
 
-- **Netlify** — `netlify.toml` is configured (build `npm run build`, publish `dist`, SPA redirect).
-- **cPanel / Apache** — upload the contents of `dist/` to `public_html`.
-  `public/.htaccess` handles HTTPS, SPA routing, caching, and the `/contact.php`
-  passthrough. (On non-Cloudflare hosts the form falls back to `mailto:` unless
-  you wire `contact.php`.)
+`netlify.toml` is configured (build `npm run build`, publish `dist`, SPA redirect).
+Connect the repo in Netlify (**Add new site → Import an existing project**) and it
+builds automatically.
+
+### Contact form (Netlify Forms)
+
+The form uses **Netlify Forms** — no API key or function needed. A hidden static
+form in `index.html` (`name="contact"`) lets Netlify's build bot detect the form;
+the React form posts URL-encoded data to `/` with `form-name=contact`.
+
+To receive submissions: Netlify dashboard → **Forms** (submissions are listed
+there) → **Form notifications** → add an email notification to `info@mcern.org`.
+Spam is filtered via the `bot-field` honeypot. Free tier: 100 submissions/month.
+
+> Netlify Forms only works when the site is hosted on Netlify. On other hosts the
+> form falls back to opening the visitor's email client (`mailto:`).
+
+## Deployment — cPanel / Apache
+
+Upload the contents of `dist/` to `public_html`. `public/.htaccess` handles HTTPS,
+SPA routing, caching, and the `/contact.php` passthrough. (The form falls back to
+`mailto:` unless you wire `contact.php`.)

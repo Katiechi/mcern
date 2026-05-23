@@ -75,22 +75,25 @@ function Contact() {
     };
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: parsed.data.name,
-          email: parsed.data.email,
-          phone: parsed.data.phone ?? "",
-          subject: parsed.data.subject,
-          message: parsed.data.message,
-          "bot-field": String(fd.get("bot-field") ?? ""),
-        }),
+      // Submit to Netlify Forms: URL-encoded POST to the site root, with the
+      // form-name matching the hidden detection form in index.html.
+      const body = new URLSearchParams({
+        "form-name": "contact",
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone ?? "",
+        subject: parsed.data.subject,
+        message: parsed.data.message,
+        "bot-field": String(fd.get("bot-field") ?? ""),
       });
 
-      const json = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      });
 
-      if (res.ok && json?.ok) {
+      if (res.ok) {
         toast.success("Message sent — we'll get back to you soon.");
         (e.target as HTMLFormElement).reset();
         setSubject("General Inquiry");
@@ -157,7 +160,16 @@ function Contact() {
               <h2 className="font-display text-2xl font-bold">Send us a message</h2>
               <p className="mt-1 text-sm text-muted-foreground">We typically respond within 2–3 business days.</p>
 
-              <form className="mt-6 space-y-5" onSubmit={onSubmit} noValidate>
+              <form
+                className="mt-6 space-y-5"
+                name="contact"
+                method="POST"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+                onSubmit={onSubmit}
+                noValidate
+              >
+                <input type="hidden" name="form-name" value="contact" />
                 {/* Honeypot — hidden from humans, bots typically fill it. */}
                 <p className="hidden" aria-hidden="true">
                   <label>
