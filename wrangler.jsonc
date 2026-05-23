@@ -4,6 +4,12 @@
   "compatibility_date": "2026-05-23",
   "compatibility_flags": ["nodejs_compat"],
   "main": "worker/index.ts",
+  // Build the SPA into dist/ before deploying. This makes `wrangler deploy`
+  // self-contained, so the deploy works without a separate dashboard build
+  // command (wrangler still bundles worker/index.ts itself afterwards).
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "dist",
     "binding": "ASSETS",
